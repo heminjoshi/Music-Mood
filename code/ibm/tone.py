@@ -3,7 +3,7 @@ import json
 from watson_developer_cloud import ToneAnalyzerV3
 
 class ToneAnalyzer(object) :
-    def __init__(self, key = "phww3vCRE3yOHNB5jgRvypsJzSM0B6cEIpRgQ2H-0JYr") :
+    def __init__(self, key = "my_key") :
         self.key = key;
 
     def analyze(self, track) :
