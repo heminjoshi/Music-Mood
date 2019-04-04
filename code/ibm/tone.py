@@ -3,7 +3,7 @@ import json
 from watson_developer_cloud import ToneAnalyzerV3
 
 class ToneAnalyzer(object) :
-    def __init__(self, key = "my_key") :
+    def __init__(self, key = "phww3vCRE3yOHNB5jgRvypsJzSM0B6cEIpRgQ2H-0JYr") :
         self.key = key;
 
     def analyze(self, track) :
@@ -13,7 +13,7 @@ class ToneAnalyzer(object) :
             url='https://gateway.watsonplatform.net/tone-analyzer/api'
         )
         tone_analysis = tone_analyzer.tone( {'text': track.lyrics}, 'application/json').get_result()
-        
+        fetched = [k['tone_name'] for k in tone_analysis["document_tone"]["tones"]]
         return [k['tone_name'] for k in tone_analysis["document_tone"]["tones"]];
 
 

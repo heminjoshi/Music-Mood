@@ -22,7 +22,7 @@ class Track(object):
 
 
 class Musix(object):
-    def __init__(self, country="us", apikey="api_key"):
+    def __init__(self, country="us", apikey="acf266ecb81687ee6f567e6fe9d0ca06"):
         # Country variable will be used for getting charts.
         self.country = country
 

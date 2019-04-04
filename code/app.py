@@ -1,3 +1,4 @@
+import pandas as pd
 from flask import Flask, flash, redirect, render_template, request, session, abort
 from pipeline import Pipeline
 from musixmatch.api import Musix, Track;
@@ -31,6 +32,7 @@ def handle_data():
 
 @app.route("/musixmatch",methods=['POST'])
 def musixmatch() :
+    i = 0
     k = int(request.form['k'])
     country = request.form['country']
     musix = Musix(country)
@@ -38,13 +40,14 @@ def musixmatch() :
 
     result = ""
     for track in tracks :
+        i+= 1
         try :
             pipeline = Pipeline([track.lyrics])
             track.label(pipeline.vectorize())
 
             ibm = ToneAnalyzer();
             imb_results = ibm.analyze(track);
-            result = result + (track.name + " by <i>" + track.artist + "</i> : <b><u>" + track.mood + "</b></u> || IBM's Results <b><u>" + ', '.join(imb_results)) + "</b></u><br><br>"
+            result = result + (str(i) + ". " + track.name + " by <i>" + track.artist + "</i> : <b><u>" + track.mood + "</b></u> || IBM's Results <b><u>" + ', '.join(imb_results)) + "</b></u><br><br>"
 
         except AttributeError :
             pass
