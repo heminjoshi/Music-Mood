@@ -1,8 +1,11 @@
-import pandas as pd
 from flask import Flask, flash, redirect, render_template, request, session, abort
 from pipeline import Pipeline
 from musixmatch.api import Musix, Track;
 from ibm.tone import ToneAnalyzer;
+import pandas as pd
+from argparse import ArgumentParser
+
+FILE_NAME = "";
 
 app = Flask(__name__)
 
@@ -32,23 +35,29 @@ def handle_data():
 
 @app.route("/musixmatch",methods=['POST'])
 def musixmatch() :
-    i = 0
+    j = 0
     k = int(request.form['k'])
     country = request.form['country']
     musix = Musix(country)
     tracks = musix.get_top_lyrics(k)
-
+    f = open(FILE_NAME,"w");
+    f.write("song\ttone-analyzer\tibm\n");
+    f.close();
     result = ""
-    for track in tracks :
-        i+= 1
+    for i, track in enumerate(tracks) :
+        j += 1
         try :
             pipeline = Pipeline([track.lyrics])
             track.label(pipeline.vectorize())
 
             ibm = ToneAnalyzer();
-            imb_results = ibm.analyze(track);
-            result = result + (str(i) + ". " + track.name + " by <i>" + track.artist + "</i> : <b><u>" + track.mood + "</b></u> || IBM's Results <b><u>" + ', '.join(imb_results)) + "</b></u><br><br>"
+            ibm_results = ibm.analyze(track);
 
+            result = result + ("<b>" + str(j) + ". " + "</b>" + track.name + " by <i>" + track.artist + "</i> : <b>" + track.mood + "</b> || IBM's Results <b><u>" + ', '.join(ibm_results)) + "</b></u><br><br>"
+            f = open(FILE_NAME,"a")
+            f.write(str(track.name + " by " + track.artist + "\t" + track.mood + "\t" + ', '.join(ibm_results) + "\n"))
+            f.close()
+            print("Completed classifying " + str(i+1) + " tracks");
         except AttributeError :
             pass
 
@@ -57,4 +66,13 @@ def musixmatch() :
 # Main Function
 if __name__ == "__main__":
     # Run the Flask Server
+    parser = ArgumentParser()
+    parser.add_argument("-f",
+                        "--file",
+                        type = str, 
+                        help = "File name", 
+                        dest = "filename")
+
+    args = parser.parse_args()
+    FILE_NAME = args.filename if args.filename else "watson.csv"
     app.run()

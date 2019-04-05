@@ -13,7 +13,11 @@ class ToneAnalyzer(object) :
             url='https://gateway.watsonplatform.net/tone-analyzer/api'
         )
         tone_analysis = tone_analyzer.tone( {'text': track.lyrics}, 'application/json').get_result()
-        fetched = [k['tone_name'] for k in tone_analysis["document_tone"]["tones"]]
-        return [k['tone_name'] for k in tone_analysis["document_tone"]["tones"]];
+        
+        return [self.remapTones(k['tone_name'].lower()) for k in tone_analysis["document_tone"]["tones"]];
 
-
+    def remapTones(self, tone) :
+        if "anger" in tone or "fear" in tone or "sadness" in tone :
+            return "Sad :("
+        return "Happy :)"
+# emojis give uicode error 😎 😞
